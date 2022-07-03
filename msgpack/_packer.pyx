@@ -11,6 +11,7 @@ cdef ExtType
 cdef Timestamp
 
 from .ext import ExtType, Timestamp
+from .msgint import *
 
 
 cdef extern from "Python.h":
@@ -30,6 +31,16 @@ cdef extern from "pack.h":
     int msgpack_pack_nil(msgpack_packer* pk)
     int msgpack_pack_true(msgpack_packer* pk)
     int msgpack_pack_false(msgpack_packer* pk)
+    int msgpack_pack_ubyte(msgpack_packer* pk, unsigned char d)
+    int msgpack_pack_byte(msgpack_packer* pk, char d)
+    int msgpack_pack_uint8(msgpack_packer* pk, unsigned char d)
+    int msgpack_pack_int8(msgpack_packer* pk, char d)
+    int msgpack_pack_uint16(msgpack_packer* pk, unsigned short d)
+    int msgpack_pack_int16(msgpack_packer* pk, short d)
+    int msgpack_pack_uint32(msgpack_packer* pk, unsigned int d)
+    int msgpack_pack_int32(msgpack_packer* pk, int d)
+    int msgpack_pack_uint64(msgpack_packer* pk, unsigned long long d)
+    int msgpack_pack_int64(msgpack_packer* pk, long long d)
     int msgpack_pack_long(msgpack_packer* pk, long d)
     int msgpack_pack_long_long(msgpack_packer* pk, long long d)
     int msgpack_pack_unsigned_long_long(msgpack_packer* pk, unsigned long long d)
@@ -173,7 +184,30 @@ cdef class Packer(object):
                 # PyInt_Check(long) is True for Python 3.
                 # So we should test long before int.
                 try:
-                    if o > 0:
+                    llval = o
+                    if isinstance(o, msgUByte):
+                        ret = msgpack_pack_ubyte(&self.pk, llval)
+                    elif isinstance(o, msgByte):
+                        ret = msgpack_pack_byte(&self.pk, llval)
+                    elif isinstance(o, msgUInt8):
+                        ret = msgpack_pack_uint8(&self.pk, llval)
+                    elif isinstance(o, msgInt8):
+                        ret = msgpack_pack_int8(&self.pk, llval)
+                    elif isinstance(o, msgUInt16):
+                        ret = msgpack_pack_uint16(&self.pk, llval)
+                    elif isinstance(o, msgInt16):
+                        ret = msgpack_pack_int16(&self.pk, llval)
+                    elif isinstance(o, msgUInt32):
+                        ullval = o
+                        ret = msgpack_pack_uint32(&self.pk, ullval)
+                    elif isinstance(o, msgInt32):
+                        ret = msgpack_pack_int32(&self.pk, llval)
+                    elif isinstance(o, msgUInt64):
+                        ullval = o
+                        ret = msgpack_pack_uint64(&self.pk, ullval)
+                    elif isinstance(o, msgInt64):
+                        ret = msgpack_pack_int64(&self.pk, llval)
+                    elif o > 0:
                         ullval = o
                         ret = msgpack_pack_unsigned_long_long(&self.pk, ullval)
                     else:
@@ -187,10 +221,40 @@ cdef class Packer(object):
                     else:
                         raise OverflowError("Integer value out of range")
             elif PyInt_CheckExact(o) if strict_types else PyInt_Check(o):
-                longval = o
-                ret = msgpack_pack_long(&self.pk, longval)
+                llval = o
+                if isinstance(o, msgUByte):
+                    ret = msgpack_pack_ubyte(&self.pk, llval)
+                elif isinstance(o, msgByte):
+                    ret = msgpack_pack_byte(&self.pk, llval)
+                elif isinstance(o, msgUInt8):
+                    ret = msgpack_pack_uint8(&self.pk, llval)
+                elif isinstance(o, msgInt8):
+                    ret = msgpack_pack_int8(&self.pk, llval)
+                elif isinstance(o, msgUInt16):
+                    ret = msgpack_pack_uint16(&self.pk, llval)
+                elif isinstance(o, msgInt16):
+                    ret = msgpack_pack_int16(&self.pk, llval)
+                elif isinstance(o, msgUInt32):
+                    ullval = o
+                    ret = msgpack_pack_uint32(&self.pk, ullval)
+                elif isinstance(o, msgInt32):
+                    ret = msgpack_pack_int32(&self.pk, llval)
+                elif isinstance(o, msgUInt64):
+                    ullval = o
+                    ret = msgpack_pack_uint64(&self.pk, ullval)
+                elif isinstance(o, msgInt64):
+                    ret = msgpack_pack_int64(&self.pk, llval)
+                else:
+                    longval = o
+                    ret = msgpack_pack_long(&self.pk, longval)
             elif PyFloat_CheckExact(o) if strict_types else PyFloat_Check(o):
-                if self.use_float:
+                if isinstance(o, msgFloat):
+                    fval = o
+                    ret = msgpack_pack_float(&self.pk, fval)
+                elif isinstance(o, msgDouble):
+                    dval = o
+                    ret = msgpack_pack_double(&self.pk, dval)
+                elif self.use_float:
                    fval = o
                    ret = msgpack_pack_float(&self.pk, fval)
                 else:
