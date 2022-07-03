@@ -1,6 +1,7 @@
 # coding: utf-8
 from .exceptions import *
 from .ext import ExtType, Timestamp
+from .msgint import *
 
 import os
 import sys

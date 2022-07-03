@@ -3,6 +3,7 @@ from datetime import datetime as _DateTime
 import sys
 import struct
 
+from .msgint import *
 
 PY2 = sys.version_info[0] == 2
 if PY2:
@@ -151,16 +152,16 @@ _MSGPACK_HEADERS = {
     0xC7: (2, "Bb", TYPE_EXT),
     0xC8: (3, ">Hb", TYPE_EXT),
     0xC9: (5, ">Ib", TYPE_EXT),
-    0xCA: (4, ">f"),
-    0xCB: (8, ">d"),
-    0xCC: (1, _NO_FORMAT_USED),
-    0xCD: (2, ">H"),
-    0xCE: (4, ">I"),
-    0xCF: (8, ">Q"),
-    0xD0: (1, "b"),
-    0xD1: (2, ">h"),
-    0xD2: (4, ">i"),
-    0xD3: (8, ">q"),
+    0xCA: (4, ">f", msgFloat),
+    0xCB: (8, ">d", msgDouble),
+    0xCC: (1, _NO_FORMAT_USED, msgUInt8),
+    0xCD: (2, ">H", msgUInt16),
+    0xCE: (4, ">I", msgUInt32),
+    0xCF: (8, ">Q", msgUInt64),
+    0xD0: (1, "b", msgInt8),
+    0xD1: (2, ">h", msgInt16),
+    0xD2: (4, ">i", msgInt32),
+    0xD3: (8, ">q", msgInt64),
     0xD4: (1, "b1s", TYPE_EXT),
     0xD5: (2, "b2s", TYPE_EXT),
     0xD6: (4, "b4s", TYPE_EXT),
@@ -447,8 +448,10 @@ class Unpacker(object):
         self._buff_i += 1
         if b & 0b10000000 == 0:
             obj = b
+            obj = msgUByte(obj)
         elif b & 0b11100000 == 0b11100000:
             obj = -1 - (b ^ 0xFF)
+            obj = msgByte(obj)
         elif b & 0b11100000 == 0b10100000:
             n = b & 0b00011111
             typ = TYPE_RAW
@@ -493,13 +496,14 @@ class Unpacker(object):
                 raise ValueError("%s exceeds max_ext_len(%s)" % (L, self._max_ext_len))
             obj = self._read(L)
         elif 0xCA <= b <= 0xD3:
-            size, fmt = _MSGPACK_HEADERS[b]
+            size, fmt, inttype = _MSGPACK_HEADERS[b]
             self._reserve(size)
             if len(fmt) > 0:
                 obj = _unpack_from(fmt, self._buffer, self._buff_i)[0]
             else:
                 obj = self._buffer[self._buff_i]
             self._buff_i += size
+            obj = inttype(obj)
         elif 0xD4 <= b <= 0xD8:
             size, fmt, typ = _MSGPACK_HEADERS[b]
             if self._max_ext_len < size:
@@ -775,6 +779,28 @@ class Packer(object):
                     return self._buffer.write(b"\xc3")
                 return self._buffer.write(b"\xc2")
             if check(obj, int_types):
+                # Write specific int types
+                if isinstance(obj, msgUByte):
+                    return self._buffer.write(struct.pack("B", obj))
+                if isinstance(obj, msgByte):
+                    return self._buffer.write(struct.pack("b", obj))
+                if isinstance(obj, msgUInt8):
+                    return self._buffer.write(struct.pack("BB", 0xCC, obj))
+                if isinstance(obj, msgInt8):
+                    return self._buffer.write(struct.pack(">Bb", 0xD0, obj))
+                if isinstance(obj, msgUInt16):
+                    return self._buffer.write(struct.pack(">BH", 0xCD, obj))
+                if isinstance(obj, msgInt16):
+                    return self._buffer.write(struct.pack(">Bh", 0xD1, obj))
+                if isinstance(obj, msgUInt32):
+                    return self._buffer.write(struct.pack(">BI", 0xCE, obj))
+                if isinstance(obj, msgInt32):
+                    return self._buffer.write(struct.pack(">Bi", 0xD2, obj))
+                if isinstance(obj, msgUInt64):
+                    return self._buffer.write(struct.pack(">BQ", 0xCF, obj))
+                if isinstance(obj, msgInt64):
+                    return self._buffer.write(struct.pack(">Bq", 0xD3, obj))
+                # Fall back to original implementation
                 if 0 <= obj < 0x80:
                     return self._buffer.write(struct.pack("B", obj))
                 if -0x20 <= obj < 0:
@@ -820,6 +846,12 @@ class Packer(object):
                 self._pack_bin_header(n)
                 return self._buffer.write(obj)
             if check(obj, float):
+                # Write specific float types
+                if isinstance(obj, msgFloat):
+                    return self._buffer.write(struct.pack(">Bf", 0xCA, obj))
+                if isinstance(obj, msgDouble):
+                    return self._buffer.write(struct.pack(">Bd", 0xCB, obj))
+                # Fall back to original implementation
                 if self._use_float:
                     return self._buffer.write(struct.pack(">Bf", 0xCA, obj))
                 return self._buffer.write(struct.pack(">Bd", 0xCB, obj))
