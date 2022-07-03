@@ -10,6 +10,9 @@ It lets you exchange data among multiple languages like JSON.
 But it's faster and smaller.
 This package provides CPython bindings for reading and writing MessagePack data.
 
+This fork of msgpack-python allows packing/unpacking int/float values with strict types.
+When an `int` is unpacked, it is stored in a class that inhertis from `msgIntBase` (which inherits from `int`).
+This allows storing the value in a pseudo-format so that it can packed into the same type that it was read with.
 
 ## Very important notes for existing users
 
