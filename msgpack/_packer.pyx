@@ -184,29 +184,26 @@ cdef class Packer(object):
                 # PyInt_Check(long) is True for Python 3.
                 # So we should test long before int.
                 try:
-                    llval = o
                     if isinstance(o, msgUByte):
-                        ret = msgpack_pack_ubyte(&self.pk, llval)
+                        ret = msgpack_pack_ubyte(&self.pk, o)
                     elif isinstance(o, msgByte):
-                        ret = msgpack_pack_byte(&self.pk, llval)
+                        ret = msgpack_pack_byte(&self.pk, o)
                     elif isinstance(o, msgUInt8):
-                        ret = msgpack_pack_uint8(&self.pk, llval)
+                        ret = msgpack_pack_uint8(&self.pk, o)
                     elif isinstance(o, msgInt8):
-                        ret = msgpack_pack_int8(&self.pk, llval)
+                        ret = msgpack_pack_int8(&self.pk, o)
                     elif isinstance(o, msgUInt16):
-                        ret = msgpack_pack_uint16(&self.pk, llval)
+                        ret = msgpack_pack_uint16(&self.pk, o)
                     elif isinstance(o, msgInt16):
-                        ret = msgpack_pack_int16(&self.pk, llval)
+                        ret = msgpack_pack_int16(&self.pk, o)
                     elif isinstance(o, msgUInt32):
-                        ullval = o
-                        ret = msgpack_pack_uint32(&self.pk, ullval)
+                        ret = msgpack_pack_uint32(&self.pk, o)
                     elif isinstance(o, msgInt32):
-                        ret = msgpack_pack_int32(&self.pk, llval)
+                        ret = msgpack_pack_int32(&self.pk, o)
                     elif isinstance(o, msgUInt64):
-                        ullval = o
-                        ret = msgpack_pack_uint64(&self.pk, ullval)
+                        ret = msgpack_pack_uint64(&self.pk, o)
                     elif isinstance(o, msgInt64):
-                        ret = msgpack_pack_int64(&self.pk, llval)
+                        ret = msgpack_pack_int64(&self.pk, o)
                     elif o > 0:
                         ullval = o
                         ret = msgpack_pack_unsigned_long_long(&self.pk, ullval)
@@ -221,29 +218,26 @@ cdef class Packer(object):
                     else:
                         raise OverflowError("Integer value out of range")
             elif PyInt_CheckExact(o) if strict_types else PyInt_Check(o):
-                llval = o
                 if isinstance(o, msgUByte):
-                    ret = msgpack_pack_ubyte(&self.pk, llval)
+                    ret = msgpack_pack_ubyte(&self.pk, o)
                 elif isinstance(o, msgByte):
-                    ret = msgpack_pack_byte(&self.pk, llval)
+                    ret = msgpack_pack_byte(&self.pk, o)
                 elif isinstance(o, msgUInt8):
-                    ret = msgpack_pack_uint8(&self.pk, llval)
+                    ret = msgpack_pack_uint8(&self.pk, o)
                 elif isinstance(o, msgInt8):
-                    ret = msgpack_pack_int8(&self.pk, llval)
+                    ret = msgpack_pack_int8(&self.pk, o)
                 elif isinstance(o, msgUInt16):
-                    ret = msgpack_pack_uint16(&self.pk, llval)
+                    ret = msgpack_pack_uint16(&self.pk, o)
                 elif isinstance(o, msgInt16):
-                    ret = msgpack_pack_int16(&self.pk, llval)
+                    ret = msgpack_pack_int16(&self.pk, o)
                 elif isinstance(o, msgUInt32):
-                    ullval = o
-                    ret = msgpack_pack_uint32(&self.pk, ullval)
+                    ret = msgpack_pack_uint32(&self.pk, o)
                 elif isinstance(o, msgInt32):
-                    ret = msgpack_pack_int32(&self.pk, llval)
+                    ret = msgpack_pack_int32(&self.pk, o)
                 elif isinstance(o, msgUInt64):
-                    ullval = o
-                    ret = msgpack_pack_uint64(&self.pk, ullval)
+                    ret = msgpack_pack_uint64(&self.pk, o)
                 elif isinstance(o, msgInt64):
-                    ret = msgpack_pack_int64(&self.pk, llval)
+                    ret = msgpack_pack_int64(&self.pk, o)
                 else:
                     longval = o
                     ret = msgpack_pack_long(&self.pk, longval)
