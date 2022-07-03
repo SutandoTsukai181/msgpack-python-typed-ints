@@ -32,6 +32,8 @@ cdef extern from "unpack.h":
         PyObject* object_hook
         PyObject* list_hook
         PyObject* ext_hook
+        PyObject* int_hook
+        PyObject* float_hook
         PyObject* timestamp_t
         PyObject *giga;
         PyObject *utc;
@@ -60,6 +62,7 @@ cdef extern from "unpack.h":
 cdef inline init_ctx(unpack_context *ctx,
                      object object_hook, object object_pairs_hook,
                      object list_hook, object ext_hook,
+                     object int_hook, object float_hook,
                      bint use_list, bint raw, int timestamp,
                      bint strict_map_key,
                      const char* unicode_errors,
@@ -103,6 +106,16 @@ cdef inline init_ctx(unpack_context *ctx,
             raise TypeError("ext_hook must be a callable.")
         ctx.user.ext_hook = <PyObject*>ext_hook
 
+    if int_hook is not None:
+        if not PyCallable_Check(int_hook):
+            raise TypeError("int_hook must be a callable.")
+        ctx.user.int_hook = <PyObject*>int_hook
+
+    if float_hook is not None:
+        if not PyCallable_Check(float_hook):
+            raise TypeError("float_hook must be a callable.")
+        ctx.user.float_hook = <PyObject*>float_hook
+
     if timestamp < 0 or 3 < timestamp:
         raise ValueError("timestamp must be 0..3")
 
@@ -144,6 +157,7 @@ def unpackb(object packed, *, object object_hook=None, object list_hook=None,
             bint use_list=True, bint raw=False, int timestamp=0, bint strict_map_key=True,
             unicode_errors=None,
             object_pairs_hook=None, ext_hook=ExtType,
+            int_hook=int, float_hook=float,
             Py_ssize_t max_str_len=-1,
             Py_ssize_t max_bin_len=-1,
             Py_ssize_t max_array_len=-1,
@@ -189,7 +203,7 @@ def unpackb(object packed, *, object object_hook=None, object list_hook=None,
 
     try:
         init_ctx(&ctx, object_hook, object_pairs_hook, list_hook, ext_hook,
-                 use_list, raw, timestamp, strict_map_key, cerr,
+                 int_hook, float_hook, use_list, raw, timestamp, strict_map_key, cerr,
                  max_str_len, max_bin_len, max_array_len, max_map_len, max_ext_len)
         ret = unpack_construct(&ctx, buf, buf_len, &off)
     finally:
@@ -312,7 +326,7 @@ cdef class Unpacker(object):
     cdef object file_like_read
     cdef Py_ssize_t read_size
     # To maintain refcnt.
-    cdef object object_hook, object_pairs_hook, list_hook, ext_hook
+    cdef object object_hook, object_pairs_hook, list_hook, ext_hook, int_hook, float_hook
     cdef object unicode_errors
     cdef Py_ssize_t max_buffer_size
     cdef uint64_t stream_offset
@@ -329,6 +343,8 @@ cdef class Unpacker(object):
                  object object_hook=None, object object_pairs_hook=None, object list_hook=None,
                  unicode_errors=None, Py_ssize_t max_buffer_size=100*1024*1024,
                  object ext_hook=ExtType,
+                 object int_hook=int,
+                 object float_hook=float,
                  Py_ssize_t max_str_len=-1,
                  Py_ssize_t max_bin_len=-1,
                  Py_ssize_t max_array_len=-1,
@@ -340,6 +356,8 @@ cdef class Unpacker(object):
         self.object_pairs_hook = object_pairs_hook
         self.list_hook = list_hook
         self.ext_hook = ext_hook
+        self.int_hook = int_hook
+        self.float_hook = float_hook
 
         self.file_like = file_like
         if file_like:
@@ -380,7 +398,7 @@ cdef class Unpacker(object):
             cerr = unicode_errors
 
         init_ctx(&self.ctx, object_hook, object_pairs_hook, list_hook,
-                 ext_hook, use_list, raw, timestamp, strict_map_key, cerr,
+                 ext_hook, int_hook, float_hook, use_list, raw, timestamp, strict_map_key, cerr,
                  max_str_len, max_bin_len, max_array_len,
                  max_map_len, max_ext_len)
 

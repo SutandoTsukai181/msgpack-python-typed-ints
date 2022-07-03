@@ -28,6 +28,8 @@ typedef struct unpack_user {
     PyObject *object_hook;
     PyObject *list_hook;
     PyObject *ext_hook;
+    PyObject *int_hook;
+    PyObject *float_hook;
     PyObject *timestamp_t;
     PyObject *giga;
     PyObject *utc;
@@ -50,21 +52,34 @@ static inline int unpack_callback_uint16(unpack_user* u, uint16_t d, msgpack_unp
     PyObject *p = PyInt_FromLong((long)d);
     if (!p)
         return -1;
-    *o = p;
+    *o = PyObject_CallFunctionObjArgs(u->int_hook, p, PyInt_FromLong((long)2), NULL);
     return 0;
 }
+
 static inline int unpack_callback_uint8(unpack_user* u, uint8_t d, msgpack_unpack_object* o)
 {
-    return unpack_callback_uint16(u, d, o);
+    PyObject *p = PyInt_FromLong((long)d);
+    if (!p)
+        return -1;
+    *o = PyObject_CallFunctionObjArgs(u->int_hook, p, PyInt_FromLong((long)0), NULL);
+    return 0;
 }
 
+static inline int unpack_callback_ubyte(unpack_user* u, uint8_t d, msgpack_unpack_object* o)
+{
+    PyObject *p = PyInt_FromLong((long)d);
+    if (!p)
+        return -1;
+    *o = PyObject_CallFunctionObjArgs(u->int_hook, p, PyInt_FromLong((long)8), NULL);
+    return 0;
+}
 
 static inline int unpack_callback_uint32(unpack_user* u, uint32_t d, msgpack_unpack_object* o)
 {
     PyObject *p = PyInt_FromSize_t((size_t)d);
     if (!p)
         return -1;
-    *o = p;
+    *o = PyObject_CallFunctionObjArgs(u->int_hook, p, PyInt_FromLong((long)4), NULL);
     return 0;
 }
 
@@ -78,7 +93,7 @@ static inline int unpack_callback_uint64(unpack_user* u, uint64_t d, msgpack_unp
     }
     if (!p)
         return -1;
-    *o = p;
+    *o = PyObject_CallFunctionObjArgs(u->int_hook, p, PyInt_FromLong((long)6), NULL);
     return 0;
 }
 
@@ -87,18 +102,35 @@ static inline int unpack_callback_int32(unpack_user* u, int32_t d, msgpack_unpac
     PyObject *p = PyInt_FromLong(d);
     if (!p)
         return -1;
-    *o = p;
+    *o = PyObject_CallFunctionObjArgs(u->int_hook, p, PyInt_FromLong((long)5), NULL);
     return 0;
 }
 
 static inline int unpack_callback_int16(unpack_user* u, int16_t d, msgpack_unpack_object* o)
 {
-    return unpack_callback_int32(u, d, o);
+    PyObject *p = PyInt_FromLong((int32_t)d);
+    if (!p)
+        return -1;
+    *o = PyObject_CallFunctionObjArgs(u->int_hook, p, PyInt_FromLong((long)3), NULL);
+    return 0;
 }
 
 static inline int unpack_callback_int8(unpack_user* u, int8_t d, msgpack_unpack_object* o)
 {
-    return unpack_callback_int32(u, d, o);
+    PyObject *p = PyInt_FromLong((int32_t)d);
+    if (!p)
+        return -1;
+    *o = PyObject_CallFunctionObjArgs(u->int_hook, p, PyInt_FromLong((long)1), NULL);
+    return 0;
+}
+
+static inline int unpack_callback_byte(unpack_user* u, int8_t d, msgpack_unpack_object* o)
+{
+    PyObject *p = PyInt_FromLong((int32_t)d);
+    if (!p)
+        return -1;
+    *o = PyObject_CallFunctionObjArgs(u->int_hook, p, PyInt_FromLong((long)9), NULL);
+    return 0;
 }
 
 static inline int unpack_callback_int64(unpack_user* u, int64_t d, msgpack_unpack_object* o)
@@ -109,7 +141,7 @@ static inline int unpack_callback_int64(unpack_user* u, int64_t d, msgpack_unpac
     } else {
         p = PyInt_FromLong((long)d);
     }
-    *o = p;
+    *o = PyObject_CallFunctionObjArgs(u->int_hook, p, PyInt_FromLong((long)7), NULL);
     return 0;
 }
 
@@ -118,13 +150,17 @@ static inline int unpack_callback_double(unpack_user* u, double d, msgpack_unpac
     PyObject *p = PyFloat_FromDouble(d);
     if (!p)
         return -1;
-    *o = p;
+    *o = PyObject_CallFunctionObjArgs(u->float_hook, p, PyInt_FromLong((long)11), NULL);
     return 0;
 }
 
 static inline int unpack_callback_float(unpack_user* u, float d, msgpack_unpack_object* o)
 {
-    return unpack_callback_double(u, d, o);
+    PyObject *p = PyFloat_FromDouble((double)d);
+    if (!p)
+        return -1;
+    *o = PyObject_CallFunctionObjArgs(u->float_hook, p, PyInt_FromLong((long)10), NULL);
+    return 0;
 }
 
 static inline int unpack_callback_nil(unpack_user* u, msgpack_unpack_object* o)

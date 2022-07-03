@@ -154,9 +154,9 @@ static inline int unpack_execute(unpack_context* ctx, const char* data, Py_ssize
         case CS_HEADER:
             SWITCH_RANGE_BEGIN
             SWITCH_RANGE(0x00, 0x7f)  // Positive Fixnum
-                push_fixed_value(_uint8, *(uint8_t*)p);
+                push_fixed_value(_ubyte, *(uint8_t*)p);
             SWITCH_RANGE(0xe0, 0xff)  // Negative Fixnum
-                push_fixed_value(_int8, *(int8_t*)p);
+                push_fixed_value(_byte, *(int8_t*)p);
             SWITCH_RANGE(0xc0, 0xdf)  // Variable
                 switch(*p) {
                 case 0xc0:  // nil
