@@ -67,7 +67,7 @@ class BuildExt(build_ext):
 # Cython is required for sdist
 class Sdist(sdist):
     def __init__(self, *args, **kwargs):
-        cythonize("msgpack/_cmsgpack.pyx")
+        cythonize("msgpacktypedints/_cmsgpack.pyx")
         sdist.__init__(self, *args, **kwargs)
 
 
@@ -82,8 +82,8 @@ ext_modules = []
 if not PYPY and not PY2 and not os.environ.get("MSGPACK_PUREPYTHON"):
     ext_modules.append(
         Extension(
-            "msgpack._cmsgpack",
-            sources=["msgpack/_cmsgpack.cpp"],
+            "msgpacktypedints._cmsgpack",
+            sources=["msgpacktypedints/_cmsgpack.cpp"],
             libraries=libraries,
             include_dirs=["."],
             define_macros=macros,
@@ -95,5 +95,5 @@ del libraries, macros
 setup(
     cmdclass={"build_ext": BuildExt, "sdist": Sdist},
     ext_modules=ext_modules,
-    packages=["msgpack"],
+    packages=["msgpacktypedints"],
 )
