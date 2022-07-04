@@ -2,7 +2,7 @@
 # coding: utf-8
 
 from pytest import raises
-from msgpack import packb, unpackb, Unpacker, FormatError, StackError, OutOfData
+from msgpacktypedints import packb, unpackb, Unpacker, FormatError, StackError, OutOfData
 
 import datetime
 
