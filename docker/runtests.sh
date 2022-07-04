@@ -11,7 +11,7 @@ for V in "${PYTHON_VERSIONS[@]}"; do
     $PYBIN/pip install pytest
     pushd test          # prevent importing msgpack package in current directory.
     $PYBIN/python -c 'import sys; print(hex(sys.maxsize))'
-    $PYBIN/python -c 'from msgpack import _cmsgpack'  # Ensure extension is available
+    $PYBIN/python -c 'from msgpack_typed_ints import _cmsgpack'  # Ensure extension is available
     $PYBIN/pytest -v .
     popd
 done

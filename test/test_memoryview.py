@@ -3,7 +3,7 @@
 
 import pytest
 from array import array
-from msgpack import packb, unpackb
+from msgpack_typed_ints import packb, unpackb
 import sys
 
 

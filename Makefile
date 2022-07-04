@@ -4,11 +4,11 @@ all: cython
 
 .PHONY: black
 black:
-	black -S msgpack/ test/ setup.py
+	black -S msgpack_typed_ints/ test/ setup.py
 
 .PHONY: cython
 cython:
-	cython --cplus msgpack/_cmsgpack.pyx
+	cython --cplus msgpack_typed_ints/_cmsgpack.pyx
 
 .PHONY: test
 test: cython
@@ -23,10 +23,10 @@ serve-doc: all
 .PHONY: clean
 clean:
 	rm -rf build
-	rm -f msgpack/_cmsgpack.cpp
-	rm -f msgpack/_cmsgpack.*.so
-	rm -f msgpack/_cmsgpack.*.pyd
-	rm -rf msgpack/__pycache__
+	rm -f msgpack_typed_ints/_cmsgpack.cpp
+	rm -f msgpack_typed_ints/_cmsgpack.*.so
+	rm -f msgpack_typed_ints/_cmsgpack.*.pyd
+	rm -rf msgpack_typed_ints/__pycache__
 	rm -rf test/__pycache__
 
 .PHONY: update-docker
