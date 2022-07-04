@@ -3,7 +3,7 @@
 
 import sys
 import pytest
-from msgpacktypedints import packb, unpackb
+from msgpack import packb, unpackb
 
 
 @pytest.mark.skipif(sys.version_info[0] == 2, reason="Python 2 is not supported")

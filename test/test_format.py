@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-from msgpacktypedints import unpackb
+from msgpack import unpackb
 
 
 def check(src, should, use_list=0, raw=True):
