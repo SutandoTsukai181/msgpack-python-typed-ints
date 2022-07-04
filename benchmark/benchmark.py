@@ -1,7 +1,7 @@
-from msgpack_typed_ints import fallback
+from msgpacktypedints import fallback
 
 try:
-    from msgpack_typed_ints import _cmsgpack
+    from msgpacktypedints import _cmsgpack
 
     has_ext = True
 except ImportError:

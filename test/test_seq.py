@@ -2,7 +2,7 @@
 # coding: utf-8
 
 import io
-import msgpack_typed_ints
+import msgpacktypedints
 
 
 binarydata = bytes(bytearray(range(256)))
@@ -15,7 +15,7 @@ def gen_binary_data(idx):
 def test_exceeding_unpacker_read_size():
     dumpf = io.BytesIO()
 
-    packer = msgpack_typed_ints.Packer()
+    packer = msgpacktypedints.Packer()
 
     NUMBER_OF_STRINGS = 6
     read_size = 16
@@ -31,7 +31,7 @@ def test_exceeding_unpacker_read_size():
     f = io.BytesIO(dumpf.getvalue())
     dumpf.close()
 
-    unpacker = msgpack_typed_ints.Unpacker(f, read_size=read_size, use_list=1)
+    unpacker = msgpacktypedints.Unpacker(f, read_size=read_size, use_list=1)
 
     read_count = 0
     for idx, o in enumerate(unpacker):

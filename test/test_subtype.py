@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-from msgpack_typed_ints import packb, unpackb
+from msgpacktypedints import packb, unpackb
 from collections import namedtuple
 
 

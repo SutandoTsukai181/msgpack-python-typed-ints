@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
-from msgpack_typed_ints import packb, unpackb
+from msgpacktypedints import packb, unpackb
 
 
 def check(length, obj, use_bin_type=True):

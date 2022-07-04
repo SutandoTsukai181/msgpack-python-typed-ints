@@ -10,7 +10,7 @@ import sys
 import pytest
 from pytest import raises, xfail
 
-from msgpack_typed_ints import packb, unpackb, Unpacker, Packer, pack
+from msgpacktypedints import packb, unpackb, Unpacker, Packer, pack
 
 
 def check(data, use_list=False):

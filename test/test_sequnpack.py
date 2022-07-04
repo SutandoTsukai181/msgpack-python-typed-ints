@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 # coding: utf-8
 import io
-from msgpack_typed_ints import Unpacker, BufferFull
-from msgpack_typed_ints import pack, packb
-from msgpack_typed_ints.exceptions import OutOfData
+from msgpacktypedints import Unpacker, BufferFull
+from msgpacktypedints import pack, packb
+from msgpacktypedints.exceptions import OutOfData
 from pytest import raises
 
 

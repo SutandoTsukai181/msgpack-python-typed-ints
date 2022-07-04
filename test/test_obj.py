@@ -2,7 +2,7 @@
 # coding: utf-8
 
 from pytest import raises
-from msgpack_typed_ints import packb, unpackb
+from msgpacktypedints import packb, unpackb
 
 
 def _decode_complex(obj):

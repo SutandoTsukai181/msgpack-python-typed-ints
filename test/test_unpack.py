@@ -1,6 +1,6 @@
 from io import BytesIO
 import sys
-from msgpack_typed_ints import Unpacker, packb, OutOfData, ExtType
+from msgpacktypedints import Unpacker, packb, OutOfData, ExtType
 from pytest import raises, mark
 
 try:

@@ -3,7 +3,7 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 import pytest
 
-from msgpack_typed_ints import (
+from msgpacktypedints import (
     packb,
     unpackb,
     Packer,

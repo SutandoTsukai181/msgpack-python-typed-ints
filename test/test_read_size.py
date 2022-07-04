@@ -1,5 +1,5 @@
 """Test Unpacker's read_array_header and read_map_header methods"""
-from msgpack_typed_ints import packb, Unpacker, OutOfData
+from msgpacktypedints import packb, Unpacker, OutOfData
 
 UnexpectedTypeException = ValueError
 
